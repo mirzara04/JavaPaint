@@ -1,0 +1,13 @@
+<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="50" height="50" fill="#222" rx="8"/>
+  <!-- stamp head -->
+  <rect x="13" y="28" width="24" height="8" fill="#FF6B35" rx="2"/>
+  <!-- stamp body -->
+  <rect x="19" y="18" width="12" height="12" fill="#FF6B35" rx="2"/>
+  <!-- handle -->
+  <rect x="22" y="10" width="6" height="10" fill="#FF6B35" rx="2"/>
+  <!-- ink dots -->
+  <circle cx="18" cy="42" r="2" fill="#FFD700" opacity="0.8"/>
+  <circle cx="25" cy="43" r="2" fill="#FFD700" opacity="0.8"/>
+  <circle cx="32" cy="42" r="2" fill="#FFD700" opacity="0.8"/>
+</svg>

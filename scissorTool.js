@@ -1,5 +1,5 @@
 function ScissorTool() {
-  this.icon = "assets/scissor.png";
+  this.icon = "assets/scissor.svg";
   this.name = "scissorTool";
 
   var selecting = false;
@@ -36,15 +36,9 @@ function ScissorTool() {
   };
 
   this.mousePressed = function () {
-    console.log("ScissorTool mousePressed called - pasting:", pasting, "selecting:", selecting);
-    
-    if (!mouseOnCanvas(canvas)) {
-      console.log("Mouse not on canvas");
-      return;
-    }
+    if (!mouseOnCanvas(canvas)) return;
 
     if (!pasting) {
-      console.log("Starting selection at:", mouseX, mouseY);
       selecting = true;
       startX = mouseX;
       startY = mouseY;
@@ -55,7 +49,6 @@ function ScissorTool() {
     }
 
     if (pasting && hasSelection && selImage) {
-      console.log("Pasting selection at:", mouseX, mouseY);
       
       // Restore clean canvas first
       restoreCanvasSnapshot();
@@ -80,8 +73,6 @@ function ScissorTool() {
       canvasSnapshot = null;
       rotationAngle = 0;
       
-      console.log("Paste completed, all states reset");
-      
       // Update instructions after pasting
       var ins = select("#instructions");
       if (ins) ins.html("<strong>Pasted!</strong> Make another selection or choose a different tool.");
@@ -89,8 +80,6 @@ function ScissorTool() {
   };
 
   this.mouseReleased = function () {
-    console.log("ScissorTool mouseReleased called - selecting:", selecting);
-    
     if (!selecting) return;
     
     endX = mouseX;
@@ -101,11 +90,7 @@ function ScissorTool() {
     var w = Math.abs(endX - startX);
     var h = Math.abs(endY - startY);
 
-    console.log("Selection area:", x, y, w, h);
-
     if (w < 3 || h < 3) {
-      console.log("Selection too small, clearing");
-      // Restore clean canvas and reset everything
       restoreCanvasSnapshot();
       selecting = false;
       startX = startY = endX = endY = -1;
@@ -144,12 +129,10 @@ function ScissorTool() {
     // Get the selection
     selImage = get(x, y, w, h);
     hasSelection = true;
-    
+
     // Clear selection drawing state
     selecting = false;
     startX = startY = endX = endY = -1;
-    
-    console.log("Selection created, hasSelection:", hasSelection);
 
     // Create the visual cut
     push();
@@ -220,15 +203,10 @@ function ScissorTool() {
   };
 
   this.populateOptions = function () {
-    console.log("ScissorTool populateOptions called");
-    
     var panel = select("#toolOptions");
-    if (!panel) {
-      panel = select(".toolOptions");
-    }
+    if (!panel) panel = select(".toolOptions");
     
     if (panel) {
-      console.log("Found toolOptions panel, setting up options");
       panel.html(
         '<div style="color:#fff;margin-bottom:10px;"><strong>Scissor Tool</strong></div>' +
         '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
@@ -241,61 +219,33 @@ function ScissorTool() {
 
       var cb = select("#scissorClear");
       if (cb) {
-        cb.mousePressed(function() { 
-          console.log("Clear button clicked");
-          self.clearSelection(); 
-        });
+        cb.mousePressed(function() { self.clearSelection(); });
       }
     }
 
-    console.log("Setting up paste button...");
-    setTimeout(function() {
-      self.setupPasteButton();
-    }, 200);
+    setTimeout(function() { self.setupPasteButton(); }, 200);
   };
 
   this.setupPasteButton = function() {
-    console.log("setupPasteButton called");
     var headerPasteBtn = select("#pasteButton");
-    console.log("Looking for paste button, found:", headerPasteBtn);
-    
     if (headerPasteBtn) {
-      console.log("Paste button found, setting up click handler");
-      
       headerPasteBtn.elt.onclick = null;
-      
       headerPasteBtn.mousePressed(function() {
-        console.log("=== PASTE BUTTON CLICKED ===");
-        console.log("hasSelection:", hasSelection);
-        console.log("selImage exists:", !!selImage);
-        console.log("Current pasting state:", pasting);
-        
         if (!hasSelection || !selImage) {
           alert("Please make a selection first by dragging on the canvas with the scissor tool.");
-          console.log("No selection available for pasting");
           return;
         }
-        
-        console.log("Starting paste mode");
         rotationAngle = 0;
         pasting = true;
-        
         var ins = select("#instructions");
-        if (ins) {
-          ins.html("<strong>PASTE MODE:</strong> Move mouse to position, then click to place selection.");
-        }
-        
-        console.log("Paste mode activated successfully");
+        if (ins) ins.html("<strong>PASTE MODE:</strong> Move mouse to position, then click to place selection.");
       });
-      
-      console.log("Paste button event handler set up successfully");
     } else {
-      console.error("Paste button (#pasteButton) not found in DOM!");
+      console.warn("Paste button (#pasteButton) not found in DOM!");
     }
   };
 
   this.clearSelection = function () {
-    console.log("Clearing selection");
     
     // If we have a cut area showing, restore it before clearing
     if (originalCanvasData && hasSelection) {
@@ -335,7 +285,6 @@ function ScissorTool() {
   };
 
   this.unselectTool = function () {
-    console.log("ScissorTool unselected");
     var panel = select("#toolOptions");
     if (!panel) panel = select(".toolOptions");
     if (panel) panel.html("");
@@ -351,7 +300,7 @@ function ScissorTool() {
           
           if (canvasIndex >= 0 && canvasIndex < pixels.length - 3 && 
               originalIndex >= 0 && originalIndex < originalCanvasData.length - 3) {
-            pixels[canvasIndex] = originalIndex;
+            pixels[canvasIndex]     = originalCanvasData[originalIndex];
             pixels[canvasIndex + 1] = originalCanvasData[originalIndex + 1];
             pixels[canvasIndex + 2] = originalCanvasData[originalIndex + 2];
             pixels[canvasIndex + 3] = originalCanvasData[originalIndex + 3];
@@ -381,11 +330,7 @@ function ScissorTool() {
   this.hasSelection = function() { return hasSelection; };
   this.isPasting = function() { return pasting; };
   this.startPastePreview = function() {
-    if (!hasSelection || !selImage) {
-      console.log("Cannot start paste preview - no selection");
-      return;
-    }
-    console.log("Starting paste preview via public method");
+    if (!hasSelection || !selImage) return;
     rotationAngle = 0;
     pasting = true;
     var ins = select("#instructions");

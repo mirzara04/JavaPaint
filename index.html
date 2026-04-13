@@ -40,6 +40,38 @@
       <div id="instructions" class="footer" aria-live="polite">
         <strong>Instructions:</strong> Select a tool from the sidebar. Use the scissor tool to cut and paste regions. Use the color palette to change colors. Click "Clear" to reset the canvas or "Save Image" to download your drawing.
       </div>
-    </div>
+
+      <!-- Keyboard shortcuts modal -->
+      <div id="shortcutsModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+        <div class="modal">
+          <div class="modal-header">
+            <span id="modalTitle">Help &amp; Shortcuts</span>
+            <button id="closeModal" aria-label="Close help">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="shortcut-section">
+              <div class="shortcut-section-title">General</div>
+              <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>Z</kbd><span>Undo</span></div>
+              <div class="shortcut-row"><kbd>Ctrl</kbd>+<kbd>Y</kbd><span>Redo</span></div>
+            </div>
+            <div class="shortcut-section">
+              <div class="shortcut-section-title">Scissor Tool</div>
+              <div class="shortcut-row"><kbd>R</kbd><span>Rotate selection +15°</span></div>
+              <div class="shortcut-row"><kbd>Shift</kbd>+<kbd>R</kbd><span>Rotate selection -15°</span></div>
+              <div class="shortcut-row"><kbd>P</kbd><span>Start paste preview</span></div>
+            </div>
+            <div class="shortcut-section">
+              <div class="shortcut-section-title">Tools</div>
+              <div class="shortcut-row"><span class="tool-name">Freehand</span><span>Click &amp; drag to draw</span></div>
+              <div class="shortcut-row"><span class="tool-name">Line</span><span>Click &amp; drag for straight lines</span></div>
+              <div class="shortcut-row"><span class="tool-name">Spray Can</span><span>Click &amp; drag to spray</span></div>
+              <div class="shortcut-row"><span class="tool-name">Mirror Draw</span><span>Draw with symmetry</span></div>
+              <div class="shortcut-row"><span class="tool-name">Scissor</span><span>Drag to select, Paste to place</span></div>
+              <div class="shortcut-row"><span class="tool-name">Distortion</span><span>Click &amp; drag to distort</span></div>
+              <div class="shortcut-row"><span class="tool-name">Stamp</span><span>Click to place stamps</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
   </body>
 </html>

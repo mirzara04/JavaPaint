@@ -1,7 +1,7 @@
 // Stamp Tool for P5.js Drawing App
 function StampTool() {
     this.name = "stampTool";
-    this.icon = "assets/stampTool.png"; 
+    this.icon = "assets/stampTool.svg";
     
     // Tool properties
     this.stampType = 'star'; // 'star', 'cloud', 'vertex'
@@ -128,12 +128,8 @@ function StampTool() {
     };
     
     this.populateOptions = function() {
-        console.log("Populating stamp tool options");
         const toolOptions = select("#toolOptions");
-        if (!toolOptions) {
-            console.warn("Tool options element not found for stamp tool");
-            return;
-        }
+        if (!toolOptions) return;
         
         let sizeControlsDisplay = this.stampType === 'vertex' ? 'display: none;' : '';
         let vertexControlsDisplay = this.stampType === 'vertex' ? '' : 'display: none;';
@@ -176,11 +172,8 @@ function StampTool() {
     };
     
     this.unselectTool = function() {
-        console.log("Unselecting stamp tool");
         const toolOptions = select("#toolOptions");
-        if (toolOptions) {
-            toolOptions.html("");
-        }
+        if (toolOptions) toolOptions.html("");
         window.currentStampTool = null;
         this.showPreview = false;
     };
@@ -276,7 +269,6 @@ function StampTool() {
     // Setter methods
     this.setStampType = function(type) {
         this.stampType = type;
-        console.log("Stamp type changed to:", type);
     };
     
     this.setSize = function(size) {

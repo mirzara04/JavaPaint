@@ -1,6 +1,6 @@
 function FreehandTool(){ 
     //set an icon and a name for the object 
-    this.icon = "assets/freehand.jpg"; 
+    this.icon = "assets/freehand.svg";
     this.name = "freehand"; 
 
     //to smoothly draw we'll draw a line from the previous mouse location 
@@ -58,19 +58,9 @@ function FreehandTool(){
     //This method will be called by this.selectTool() in toolbox.js
     //when this tool is selected
     this.populateOptions = function(){
-        console.log("Setting up Freehand tool options");
-        
-        // Check if toolOptions element exists
         var toolOptions = select("#toolOptions");
-        if (!toolOptions) {
-            // Try finding by class instead
-            toolOptions = select(".toolOptions");
-        }
-        
-        if (!toolOptions) {
-            console.warn("Tool options element not found for freehand tool");
-            return;
-        }
+        if (!toolOptions) toolOptions = select(".toolOptions");
+        if (!toolOptions) return;
 
         // Create the HTML structure for better styling
         toolOptions.html(`
@@ -162,8 +152,6 @@ function FreehandTool(){
         setTimeout(function() {
             self.updateBrushPreview();
         }, 100);
-
-        console.log("Freehand tool options set up successfully");
     };
 
     // Method to update brush preview
@@ -201,15 +189,9 @@ function FreehandTool(){
 
     //This method will be called when this tool is unselected
     this.unselectTool = function(){
-        console.log("Freehand tool unselected");
-        
         var toolOptions = select("#toolOptions");
-        if (!toolOptions) {
-            toolOptions = select(".toolOptions");
-        }
-        if (toolOptions) {
-            toolOptions.html("");
-        }
+        if (!toolOptions) toolOptions = select(".toolOptions");
+        if (toolOptions) toolOptions.html("");
         
         // Clean up references
         this.brushSizeSlider = null;

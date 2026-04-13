@@ -100,7 +100,8 @@ body {
 	max-width: 50px;
 	width: 100%;
 	height: 100%;
-	object-fit: cover;
+	object-fit: contain;
+	border-radius: 6px;
 }
 
 .colourPalette{
@@ -120,11 +121,12 @@ body {
 
 .colourSwatches{
 	box-sizing: border-box;
-	width: 40px;
-	height: 40px;
-	max-height: 40px;
-	max-width: 40px;
-	margin: 5px;
+	border-radius: 4px;
+	border: 2px solid transparent;
+	transition: border 0.15s, box-shadow 0.15s;
+	cursor: pointer;
+	aspect-ratio: 1;
+	width: 100%;
 }
 
 /* Remove duplicate wrapper styles */
@@ -256,19 +258,12 @@ body {
   background: #008c9e;
 }
 
-.colourSwatches {
-  border-radius: 6px;
-  border: 2px solid transparent;
-  transition: border 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-}
-.colourSwatches.selected,
 .colourSwatches:focus {
   border: 2px solid #ffeb3b;
   box-shadow: 0 0 6px #ffeb3b;
 }
 .colourSwatches:hover {
-  border: 2px solid #fff;
+  border: 2px solid #fff !important;
 }
 
 /* 4. Options Panel Styling - Remove since we're not using it in the new layout */
@@ -345,4 +340,104 @@ body {
   color: #222;
   padding: 4px 8px;
   z-index: 1000;
+}
+
+/* ── Shortcuts Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: #23272e;
+  border: 1px solid #444;
+  border-radius: 10px;
+  width: 360px;
+  max-width: 95vw;
+  max-height: 85vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #444;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 1.4rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  transition: color 0.15s;
+}
+
+.modal-header button:hover {
+  color: #fff;
+}
+
+.modal-body {
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.shortcut-section-title {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #00bcd4;
+  margin-bottom: 8px;
+}
+
+.shortcut-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.88rem;
+  color: #ccc;
+  padding: 3px 0;
+}
+
+.shortcut-row span:last-child {
+  color: #aaa;
+  font-size: 0.82rem;
+}
+
+kbd {
+  display: inline-block;
+  background: #333;
+  border: 1px solid #555;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: #fff;
+  margin: 0 1px;
+}
+
+.tool-name {
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
 }

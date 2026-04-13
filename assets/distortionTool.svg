@@ -1,0 +1,7 @@
+<svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="50" height="50" fill="#222" rx="8"/>
+  <!-- wavy distorted lines -->
+  <path d="M8 18 Q14 12 20 18 Q26 24 32 18 Q38 12 44 18" stroke="#00FFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M8 25 Q14 19 20 25 Q26 31 32 25 Q38 19 44 25" stroke="#00FFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+  <path d="M8 32 Q14 26 20 32 Q26 38 32 32 Q38 26 44 32" stroke="#00FFFF" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+</svg>

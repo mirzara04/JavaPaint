@@ -1,6 +1,6 @@
 function mirrorDrawTool() {
 	this.name = "mirrorDraw";
-	this.icon = "assets/mirrorDraw.jpg";
+	this.icon = "assets/mirrorDraw.svg";
 
 	//which axis is being mirrored (x or y) x is default
 	this.axis = "x";
@@ -46,7 +46,7 @@ function mirrorDrawTool() {
 			//draw a line between them and the current positions
 			else {
 				// Set stroke properties for drawing
-				let thickness = 2; // Default thickness
+				let thickness = this.brushSizeSlider ? this.brushSizeSlider.value() : 2;
 				strokeWeight(thickness);
 				
 				// Set color from color palette
@@ -56,15 +56,10 @@ function mirrorDrawTool() {
 					stroke(0); // Default to black
 				}
 				
-				console.log(`Drawing line from (${previousMouseX}, ${previousMouseY}) to (${mouseX}, ${mouseY})`);
-				
-				// Draw on the main side
 				line(previousMouseX, previousMouseY, mouseX, mouseY);
 				
-				// Draw on the mirrored side
 				var oX = this.calculateOpposite(mouseX, "x");
 				var oY = this.calculateOpposite(mouseY, "y");
-				console.log(`Mirrored line from (${previousOppositeMouseX}, ${previousOppositeMouseY}) to (${oX}, ${oY})`);
 				line(previousOppositeMouseX, previousOppositeMouseY, oX, oY);
 				
 				// Update previous positions
@@ -126,30 +121,17 @@ function mirrorDrawTool() {
 		//that is far greater than the line of symmetry by the distance from
 		//n to that line.
 		if (n < symmetryLine) {
-			var result = symmetryLine + (symmetryLine - n);
-			console.log(`Mirror ${a}: ${n} < ${symmetryLine} -> ${result}`);
-			return result;
-		}
-
-		//otherwise a coordinate that is smaller than the line of symmetry
-		//by the distance between it and n.
-		else {
-			var result = symmetryLine - (n - symmetryLine);
-			console.log(`Mirror ${a}: ${n} >= ${symmetryLine} -> ${result}`);
-			return result;
+			return symmetryLine + (symmetryLine - n);
+		} else {
+			return symmetryLine - (n - symmetryLine);
 		}
 	};
 
-	//when the tool is deselected update the pixels to just show the drawing and
-	//hide the line of symmetry. Also clear options
 	this.unselectTool = function() {
 		updatePixels();
-		//clear options
 		var toolOptions = select("#toolOptions");
-		if (toolOptions) {
-			toolOptions.html("");
-		}
-		// Reset drawing state
+		if (toolOptions) toolOptions.html("");
+		this.brushSizeSlider = null;
 		drawing = false;
 		previousMouseX = -1;
 		previousMouseY = -1;
@@ -157,63 +139,57 @@ function mirrorDrawTool() {
 		previousOppositeMouseY = -1;
 	};
 
-	//adds a button and click handler to the options area. When clicked
-	//toggle the line of symmetry between horizontal to vertical
 	this.populateOptions = function() {
-		// Check if toolOptions element exists before proceeding
 		var toolOptions = select("#toolOptions");
-		if (!toolOptions) {
-			console.warn("Tool options element not found for mirror draw tool");
-			return;
-		}
-		
-		// Initialize line of symmetry with current canvas dimensions
+		if (!toolOptions) return;
+
 		if (this.axis == "x") {
 			this.lineOfSymmetry = canvas.width / 2;
 		} else {
 			this.lineOfSymmetry = canvas.height / 2;
 		}
-		
+
 		toolOptions.html(`
-			<div style="margin-bottom: 10px;">
-				<strong>Mirror Draw Tool</strong><br>
-				Current: ${this.axis === 'x' ? 'Vertical' : 'Horizontal'} Mirror
-			</div>
-			<button id='directionButton' style="margin: 5px; padding: 8px 16px; background: #045b51; color: white; border: none; border-radius: 4px; cursor: pointer;">
-				${this.axis === 'x' ? 'Make Horizontal' : 'Make Vertical'}
+			<div style="color:#fff;margin-bottom:12px;"><strong>Mirror Draw Tool</strong><br>
+			<span style="font-size:11px;color:#ccc;">Mirror: ${this.axis === 'x' ? 'Vertical' : 'Horizontal'}</span></div>
+			<label style="color:#fff;font-size:12px;display:block;margin-bottom:4px;">
+			    Brush Size: <span id="mirrorBrushSizeValue">2</span>px
+			</label>
+			<div id="mirrorBrushSizeContainer" style="margin-bottom:12px;"></div>
+			<button id='directionButton' style="width:100%;padding:7px;background:#045b51;color:#fff;border:none;border-radius:4px;cursor:pointer;margin-bottom:8px;">
+				${this.axis === 'x' ? 'Switch to Horizontal' : 'Switch to Vertical'}
 			</button>
-			<div style="margin-top: 10px; font-size: 12px; color: #ccc;">
+			<div style="font-size:11px;color:#ccc;text-align:center;">
 				Click and drag to draw with mirror symmetry
 			</div>
 		`);
-		
-		//click handler
+
+		this.brushSizeSlider = createSlider(1, 30, 2);
+		this.brushSizeSlider.parent("mirrorBrushSizeContainer");
+		this.brushSizeSlider.style("width", "100%");
+
+		var self = this;
+		this.brushSizeSlider.input(function() {
+			var display = select("#mirrorBrushSizeValue");
+			if (display) display.html(self.brushSizeSlider.value());
+		});
+
 		select("#directionButton").mouseClicked(function() {
 			if (self.axis == "x") {
 				self.axis = "y";
 				self.lineOfSymmetry = canvas.height / 2;
-				this.html('Make Vertical');
+				this.html('Switch to Vertical');
 			} else {
 				self.axis = "x";
 				self.lineOfSymmetry = canvas.width / 2;
-				this.html('Make Horizontal');
-			}
-			
-			// Update the display
-			var infoDiv = toolOptions.select('div');
-			if (infoDiv) {
-				infoDiv.html(`<strong>Mirror Draw Tool</strong><br>Current: ${self.axis === 'x' ? 'Vertical' : 'Horizontal'} Mirror`);
+				this.html('Switch to Horizontal');
 			}
 		});
 	};
 	
 	// Handle mouse press - start drawing
 	this.mousePressed = function() {
-		if(!mouseOnCanvas(canvas)){
-			return;
-		}
-		
-		console.log("Mirror draw tool: Mouse pressed at", mouseX, mouseY);
+		if (!mouseOnCanvas(canvas)) return;
 		drawing = true;
 		// Reset previous positions to start fresh
 		previousMouseX = -1;
@@ -225,10 +201,6 @@ function mirrorDrawTool() {
 	// Handle mouse release - complete the drawing
 	this.mouseReleased = function() {
 		if (!drawing) return;
-		
-		console.log("Mirror draw tool: Mouse released at", mouseX, mouseY);
-		
-		// The draw function handles the drawing, we just need to reset state
 		drawing = false;
 		previousMouseX = -1;
 		previousMouseY = -1;

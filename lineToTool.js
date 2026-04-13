@@ -1,5 +1,5 @@
 function LineToTool(){
-	this.icon = "assets/lineTo.jpg";
+	this.icon = "assets/lineTo.svg";
 	this.name = "LineTo";
 
 	var startMouseX = -1;
@@ -7,26 +7,34 @@ function LineToTool(){
 	var drawing = false;
 
 	this.populateOptions = function(){
-	    // Check if toolOptions element exists before proceeding
 	    var toolOptions = select("#toolOptions");
-	    if (!toolOptions) {
-	        console.warn("Tool options element not found for line tool");
-	        return;
-	    }
-	    
-	    toolOptions.html("<div>Line Tool - Adjust thickness below:</div>");
-	    this.lineThicknessSlider = createSlider(1, 20, 1);
-	    this.lineThicknessSlider.parent("toolOptions");
+	    if (!toolOptions) return;
+
+	    toolOptions.html(`
+	        <div style="color:#fff;margin-bottom:12px;"><strong>Line Tool</strong></div>
+	        <label style="color:#fff;font-size:12px;display:block;margin-bottom:4px;">
+	            Thickness: <span id="lineThicknessValue">1</span>px
+	        </label>
+	        <div id="lineThicknessContainer" style="margin-bottom:12px;"></div>
+	        <div style="font-size:11px;color:#ccc;text-align:center;">
+	            Click and drag to draw a straight line
+	        </div>
+	    `);
+
+	    this.lineThicknessSlider = createSlider(1, 30, 1);
+	    this.lineThicknessSlider.parent("lineThicknessContainer");
+	    this.lineThicknessSlider.style("width", "100%");
+
+	    var self = this;
+	    this.lineThicknessSlider.input(function() {
+	        var display = select("#lineThicknessValue");
+	        if (display) display.html(self.lineThicknessSlider.value());
+	    });
 	}
 
 	this.unselectTool = function(){
-	    // Check if toolOptions element exists before proceeding
 	    var toolOptions = select("#toolOptions");
-	    if (!toolOptions) {
-	        console.warn("Tool options element not found for line tool unselect");
-	        return;
-	    }
-	    
+	    if (!toolOptions) return;
 	    toolOptions.html("");
 	    // Reset drawing state
 	    drawing = false;
@@ -65,22 +73,16 @@ function LineToTool(){
 
 	// Handle mouse press - start drawing
 	this.mousePressed = function() {
-	    if(!mouseOnCanvas(canvas)){
-	        return;
-	    }
-	    
-	    console.log("Line tool: Mouse pressed at", mouseX, mouseY);
-	    startMouseX = mouseX;
-	    startMouseY = mouseY;
-	    drawing = true;
-	    loadPixels(); // Save current canvas state
+		if (!mouseOnCanvas(canvas)) return;
+		startMouseX = mouseX;
+		startMouseY = mouseY;
+		drawing = true;
+		loadPixels();
 	};
 
 	// Handle mouse release - complete the line
 	this.mouseReleased = function() {
-	    if (!drawing) return;
-	    
-	    console.log("Line tool: Mouse released at", mouseX, mouseY);
+		if (!drawing) return;
 	    
 	    // Draw the final line
 	    updatePixels(); // Restore canvas

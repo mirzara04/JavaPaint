@@ -4,7 +4,7 @@ function DistortionTool() {
     
     // Tool properties (matching your pattern)
     this.name = "distortionTool";
-    this.icon = "assets/distortionTool.png"; // You'll need to add this icon
+    this.icon = "assets/distortionTool.svg";
     
     // Tool settings
     this.brushSize = 50;
@@ -488,7 +488,6 @@ function DistortionTool() {
         if (modeSelect) {
             modeSelect.changed(function() {
                 self.mode = this.value();
-                console.log("Distortion mode changed to:", self.mode);
             });
         }
     };

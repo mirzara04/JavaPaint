@@ -3,8 +3,9 @@ function HelperFunctions() {
 	var clearButton = select("#clearButton");
 	if (clearButton) {
 		clearButton.mouseClicked(function() {
-			clear(); // or background(255);
-
+			saveHistory();
+			clear();
+			background(255);
 			loadPixels();
 		});
 	} else {
@@ -23,20 +24,35 @@ function HelperFunctions() {
 	var helpButton = select("#helpButton");
 	if (helpButton) {
 		helpButton.mouseClicked(function() {
-			alert("Drawing App Help:\n\n" +
-				"Tools:\n" +
-				"• Freehand: Draw by dragging the mouse\n" +
-				"• Line: Click and drag to draw straight lines\n" +
-				"• Spray Can: Click and drag for spray effect\n" +
-				"• Mirror Draw: Draw with mirror symmetry\n" +
-				"• Scissor: Select, cut and paste circular areas\n\n" +
-				"Colors: Click any color on the right to select it\n" +
-				"Clear: Clears the entire canvas\n" +
-				"Save: Downloads your drawing as PNG");
+			var modal = document.getElementById("shortcutsModal");
+			if (modal) modal.removeAttribute("hidden");
 		});
 	} else {
 		console.warn("Help button not found");
 	}
+
+	var closeModal = document.getElementById("closeModal");
+	if (closeModal) {
+		closeModal.addEventListener("click", function() {
+			document.getElementById("shortcutsModal").setAttribute("hidden", "");
+		});
+	}
+
+	// Close on overlay click
+	var modal = document.getElementById("shortcutsModal");
+	if (modal) {
+		modal.addEventListener("click", function(e) {
+			if (e.target === modal) modal.setAttribute("hidden", "");
+		});
+	}
+
+	// Close on Escape
+	document.addEventListener("keydown", function(e) {
+		if (e.key === "Escape") {
+			var m = document.getElementById("shortcutsModal");
+			if (m) m.setAttribute("hidden", "");
+		}
+	});
 }
 
 function mouseOnCanvas(c) {

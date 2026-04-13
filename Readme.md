@@ -1,40 +1,93 @@
-# Draw Application Case Study
+# Canvas Drawing App
 
-Open the application in Brackets by dragging the folder from your Finder or Explorer into the Brackets window. Click on the live preview button to open the application in your browser. Try out all the tools in the drawing application; these are the four icons on the left of the screen. There is a freehand tool, a line draw tool, a spray can and a mirror draw tool. You’ll notice that the 'clear' and 'save' buttons don’t work yet. We’ll come to those soon.
-Read through the files
+A browser-based drawing application built with [p5.js](https://p5js.org/), featuring multiple creative tools, pixel-level canvas manipulation, and a clean dark UI.
 
-Before you get started altering the application, read through the various files that make up the drawing application template. There are quite a few of them but several should be familiar.
+> Live demo: [mirzara04.github.io/drawing_app](https://mirzara04.github.io/drawing_app)
 
-*Index.html:* The outlines of the HTML content of the application. This is a bit more complex than some of the other HTML files you will have seen in p5.js programmes. Some of this application is built on the DOM and outside of the canvas. There are also a lot of script imports. These files make up the rest of the application, along with p5.dom and the style sheet.
-*style.css:* The style sheet. As we are using the DOM, this handles the layout and look of the application. 
-*sketch.js:* The p5.js sketch, which declares any global variables, setup and draw.
-*p5.min.js:* The p5 library – thankfully we don’t have to know what goes on inside here!
-*colourPalette.js and toolbox.js:* These are two container functions that have been written for you. You don’t need to fully understand them but you might want to use some of their properties. For example, selectedTool gets the current tool that has been selected by the user.
-*helperFunctions.js:* A place to write functions that either don’t necessarily belong to objects or that you want to use multiple times. Right now, it contains click handlers for the 'clear' button and the 'save image' button.
-*lineToTool.js, freehandTool.js and mirrorDrawTool.js:* All tools that appear in the tool box. 
+---
 
-For tools to work, they have to have: a property called 'icon', which is an URI for an image for the tool icon; a property called 'name', which is a string name for the tool; and a draw function.
+## Features
 
-## Task 1: Comment the lineToTool.js
-Comment the file so that another programmer can understand what it does and how it works. You might not have seen loadPixel and updatePixel functions before. Check them out in the p5 documentation and see what they do. Try commenting them out and seeing how it affects the running of the program (remember to uncomment the two lines again before submitting your code).
+- **Freehand** — smooth brush drawing with adjustable size, opacity, and round/square tip
+- **Line Tool** — click and drag to draw precise straight lines with variable thickness
+- **Spray Can** — randomised spray paint effect
+- **Mirror Draw** — draw with real-time vertical or horizontal symmetry
+- **Scissor Tool** — drag to select a region, cut it, rotate it, and paste it anywhere
+- **Distortion Tool** — pixel-level push, pull, swirl, pinch, and bulge effects with live preview
+- **Stamp Tool** — place star, cloud, and polygon stamps with rotation control
+- **Colour Palette** — 24 preset swatches plus a custom colour picker with live preview
+- **Undo / Redo** — full history stack (Ctrl+Z / Ctrl+Y), including clear
+- **Save** — export your drawing as a PNG
 
-## Task 2: Turn sprayCan into a constructor function
-Currently the spray can tool is an object literal declared in the sketch file. Change it to a constructor function in its own file:
+---
 
-* Cut the spray can object literal from the sketch file and paste it into a new file. 
-* Save the file as sprayCanTool.js.
-* Rewrite the object literal as a constructor function called SprayCanTool(). Don’t forget that properties and methods are declared with this (e.g. this.points = 13 and this.draw = function()).
-* Delete the object literal from the file when you are done.
-* In the index.html file, add a new script tag for sprayCanTool.js.
-* In sketch.js change the toolbox.addTool(sprayCan); to create a new sprayCan.
+## Keyboard Shortcuts
 
-## Task 3: Complete the helper functions
-In the helperFunctions constructor, two event handlers are created to handle the save and clear buttons.
+| Key | Action |
+|-----|--------|
+| `Ctrl+Z` | Undo |
+| `Ctrl+Y` | Redo |
+| `R` | Rotate scissor selection +15° |
+| `Shift+R` | Rotate scissor selection -15° |
+| `P` | Start paste preview (scissor tool) |
 
-* Replace ??? on line 9 with the p5.js background function to reset the colour to white.
-* Replace ??? on line 19. In the p5.js reference guide, look up a function to save the canvas. Call this function so the user's drawing is saved to the hard disk.
+---
 
-## When you're done: 
-Some other things to do when you have finished:
-Take a look at the mirror tool. It’s a bit more complex than the others we have seen; see if you can work out how it works.
-Try to write some tools of your own. Maybe a rectangle tool and an ellipse tool.
+## Technical Highlights
+
+- **Pixel manipulation** — the distortion tool reads and writes raw canvas pixel arrays directly via `loadPixels()` / `updatePixels()`, implementing five distinct warp algorithms (push, pull, swirl, pinch, bulge)
+- **Undo/redo stack** — canvas state is snapshotted as `Uint8ClampedArray` on every mouse release, capped at 30 history entries to manage memory
+- **Tool architecture** — each tool follows a consistent interface (`draw`, `mousePressed`, `mouseReleased`, `populateOptions`, `unselectTool`), making it straightforward to add new tools
+- **Scissor cut/paste** — captures a pixel region with `get()`, erases the source area, then renders a live paste preview with rotation before committing
+
+---
+
+## Getting Started
+
+```bash
+git clone https://github.com/mirzara04/drawing_app.git
+cd drawing_app
+npm install
+npx http-server . -p 3000
+```
+
+Then open [http://localhost:3000](http://localhost:3000).
+
+---
+
+## Running Tests
+
+```bash
+npm run test:unit          # unit tests
+npm run test:integration   # integration tests
+npm run test:coverage      # full coverage report
+```
+
+---
+
+## Project Structure
+
+```
+├── sketch.js           # p5.js entry point, global setup, undo/redo
+├── toolbox.js          # tool registry and sidebar rendering
+├── colourPalette.js    # colour swatches and custom picker
+├── helperFunctions.js  # clear, save, help modal
+├── freehandTool.js
+├── lineToTool.js
+├── mirrorDrawTool.js
+├── scissorTool.js
+├── distortionTool.js
+├── stampTool.js
+├── assets/             # SVG and PNG tool icons
+├── lib/                # p5.js library
+└── tests/              # unit, integration, system, acceptance
+```
+
+---
+
+## Built With
+
+- [p5.js](https://p5js.org/) — creative coding / canvas library
+- Vanilla JavaScript (ES5/ES6)
+- HTML5 Canvas API
+- CSS Grid layout
