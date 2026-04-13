@@ -45,8 +45,8 @@ A browser-based drawing application built with [p5.js](https://p5js.org/), featu
 ## Getting Started
 
 ```bash
-git clone https://github.com/mirzara04/drawing_app.git
-cd drawing_app
+git clone https://github.com/mirzara04/JavaPaint.git
+cd JavaPaint
 npm install
 npx http-server . -p 3000
 ```
