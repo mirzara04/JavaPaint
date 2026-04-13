@@ -2,7 +2,7 @@
 
 A browser-based drawing application built with [p5.js](https://p5js.org/), featuring multiple creative tools, pixel-level canvas manipulation, and a clean dark UI.
 
-> Live demo: [mirzara04.github.io/drawing_app](https://mirzara04.github.io/drawing_app)
+> Live demo: [mirzara04.github.io/JavaPaint](https://mirzara04.github.io/JavaPaint)
 
 ---
 
