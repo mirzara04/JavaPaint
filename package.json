@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "test": "jest",
+    "test:unit": "jest tests/unit/",
+    "test:integration": "jest tests/integration/",
+    "test:coverage": "jest --coverage",
+    "test:system": "jest tests/system/",
+    "test:acceptance": "jest tests/acceptance/",
+    "test:whitebox": "jest tests/unit/ tests/integration/",
+    "test:blackbox": "jest tests/system/ tests/acceptance/",
+    "test:scissor": "jest tests/unit/scissorTool.test.js tests/integration/scissorTool-integration.test.js tests/system/scissorTool-system.test.js tests/acceptance/scissorTool-acceptance.test.js",
+    "start": "http-server . -p 8080",
+    "test:all": "npm run test:coverage && npm run start & sleep 3 && npm run test:system && npm run test:acceptance"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "jest": "^30.1.1",
+    "jest-environment-jsdom": "^30.1.1",
+    "jsdom": "^26.1.0",
+    "jsdom-global": "^3.0.2",
+    "text-encoding": "^0.7.0"
+  }
+}

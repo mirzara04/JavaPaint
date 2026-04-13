@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Drawing App - Scissor Tool</title>
+    <link rel="icon" type="image/png" href="assets/favicon.png">
+    <script src="lib/p5.min.js"></script>
+    <script src="lib/p5.dom.js"></script>
+    <script src="helperFunctions.js"></script>
+    <script src="colourPalette.js"></script>
+    <script src="freehandTool.js"></script>
+    <script src="lineToTool.js"></script>
+    <script src="mirrorDrawTool.js"></script>
+    <script src="scissorTool.js"></script>
+    <script src="distortionTool.js"></script>
+    <script src="stampTool.js"></script>
+    <script src="toolbox.js"></script>
+    <script src="sketch.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link href="https://fonts.googleapis.com/css?family=Inter:400,700&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <a href="#content" class="skip-link">Skip to drawing canvas</a>
+    <div class="wrapper" role="application">
+      <div class="header" role="banner">
+        My Drawing App
+        <button id="clearButton" aria-label="Clear the canvas">Clear</button>
+        <button id="saveImageButton" aria-label="Save your drawing">Save Image</button>
+        <button id="helpButton" aria-label="Show help and shortcuts">Help</button>
+        <button id="pasteButton" aria-label="Paste the cut selection">Paste</button>
+
+      </div>
+      <nav id="sidebar" role="navigation" aria-label="Toolbox"></nav>
+      <main id="content" role="main" aria-label="Drawing Canvas" tabindex="0"></main>
+      
+      <div class="colourPalette" aria-label="Colour Palette">
+        <div id="toolOptions" class="toolOptions" aria-label="Tool Options"></div>
+      </div>
+      <div id="instructions" class="footer" aria-live="polite">
+        <strong>Instructions:</strong> Select a tool from the sidebar. Use the scissor tool to cut and paste regions. Use the color palette to change colors. Click "Clear" to reset the canvas or "Save Image" to download your drawing.
+      </div>
+    </div>
+  </body>
+</html>

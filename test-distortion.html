@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distortion Tool Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background: #333;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            display: flex;
+            gap: 20px;
+        }
+        .canvas-container {
+            border: 2px solid #666;
+            background: white;
+        }
+        .controls {
+            background: #444;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 250px;
+        }
+        .control-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #ccc;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #666;
+            border-radius: 4px;
+            background: #333;
+            color: white;
+        }
+        button {
+            background: #007acc;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        button:hover {
+            background: #005a9e;
+        }
+        .info {
+            background: #555;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Distortion Tool Test</h1>
+    
+    <div class="test-container">
+        <div class="canvas-container">
+            <canvas id="testCanvas" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>Mode:</label>
+                <select id="modeSelect">
+                    <option value="push">Push (Push pixels outward)</option>
+                    <option value="pull">Pull (Pull pixels inward)</option>
+                    <option value="swirl">Swirl (Rotate pixels)</option>
+                    <option value="pinch">Pinch (Squeeze pixels)</option>
+                    <option value="bulge">Bulge (Expand pixels)</option>
+                </select>
+            </div>
+            
+            <div class="control-group">
+                <label>Brush Size: <span id="brushSizeValue">50</span>px</label>
+                <input type="range" id="brushSize" min="20" max="150" value="50">
+            </div>
+            
+            <div class="control-group">
+                <label>Strength: <span id="strengthValue">50</span>%</label>
+                <input type="range" id="strength" min="0" max="1" step="0.1" value="0.5">
+            </div>
+            
+            <div class="control-group">
+                <button onclick="clearCanvas()">Clear Canvas</button>
+                <button onclick="drawTestPattern()">Draw Test Pattern</button>
+            </div>
+            
+            <div class="info">
+                <h3>Instructions:</h3>
+                <p>1. Click "Draw Test Pattern" to create a test image</p>
+                <p>2. Select a distortion mode</p>
+                <p>3. Adjust brush size and strength</p>
+                <p>4. Click and drag on the canvas to apply distortion</p>
+                <p>5. Try different modes to see the effects</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Simple distortion tool implementation for testing
+        class SimpleDistortionTool {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.isDragging = false;
+                this.lastX = 0;
+                this.lastY = 0;
+                this.backupCanvas = null;
+                this.backupCtx = null;
+                
+                this.mode = 'push';
+                this.brushSize = 50;
+                this.strength = 0.5;
+                this.swirlAngle = Math.PI / 4;
+                
+                this.setupEventListeners();
+            }
+            
+            setupEventListeners() {
+                this.canvas.addEventListener('mousedown', (e) => this.mousePressed(e));
+                this.canvas.addEventListener('mousemove', (e) => this.mouseDragged(e));
+                this.canvas.addEventListener('mouseup', (e) => this.mouseReleased(e));
+            }
+            
+            mousePressed(e) {
+                const rect = this.canvas.getBoundingClientRect();
+                this.lastX = e.clientX - rect.left;
+                this.lastY = e.clientY - rect.top;
+                this.isDragging = true;
+                
+                // Backup current canvas state
+                this.backupCanvas = document.createElement('canvas');
+                this.backupCtx = this.backupCanvas.getContext('2d');
+                this.backupCanvas.width = this.canvas.width;
+                this.backupCanvas.height = this.canvas.height;
+                this.backupCtx.drawImage(this.canvas, 0, 0);
+            }
+            
+            mouseDragged(e) {
+                if (!this.isDragging) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                this.applyDistortion(x, y);
+                this.lastX = x;
+                this.lastY = y;
+            }
+            
+            mouseReleased(e) {
+                this.isDragging = false;
+            }
+            
+            applyDistortion(centerX, centerY) {
+                if (!this.backupCanvas) return;
+                
+                const sourceData = this.backupCtx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+                const targetData = this.ctx.createImageData(this.canvas.width, this.canvas.height);
+                
+                // Copy original data
+                for (let i = 0; i < sourceData.data.length; i++) {
+                    targetData.data[i] = sourceData.data[i];
+                }
+                
+                const radius = this.brushSize;
+                const strength = this.strength;
+                
+                // Apply distortion based on mode
+                switch (this.mode) {
+                    case 'push':
+                        this.applyPushDistortion(sourceData, targetData, centerX, centerY, radius, strength);
+                        break;
+                    case 'pull':
+                        this.applyPullDistortion(sourceData, targetData, centerX, centerY, radius, strength);
+                        break;
+                    case 'swirl':
+                        this.applySwirlDistortion(sourceData, targetData, centerX, centerY, radius, strength);
+                        break;
+                    case 'pinch':
+                        this.applyPinchDistortion(sourceData, targetData, centerX, centerY, radius, strength);
+                        break;
+                    case 'bulge':
+                        this.applyBulgeDistortion(sourceData, targetData, centerX, centerY, radius, strength);
+                        break;
+                }
+                
+                this.ctx.putImageData(targetData, 0, 0);
+            }
+            
+            applyPushDistortion(sourceData, targetData, centerX, centerY, radius, strength) {
+                for (let px = Math.max(0, centerX - radius); px < Math.min(this.canvas.width, centerX + radius); px++) {
+                    for (let py = Math.max(0, centerY - radius); py < Math.min(this.canvas.height, centerY + radius); py++) {
+                        const dx = px - centerX;
+                        const dy = py - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < radius && distance > 0) {
+                            // Create a strong outward push effect
+                            const factor = (radius - distance) / radius;
+                            const pushForce = factor * factor * strength * 50; // Much stronger force
+                            
+                            // Calculate push direction (away from center)
+                            const angle = Math.atan2(dy, dx);
+                            const sourceX = Math.round(px - Math.cos(angle) * pushForce);
+                            const sourceY = Math.round(py - Math.sin(angle) * pushForce);
+                            
+                            this.copyPixel(sourceData, targetData, sourceX, sourceY, px, py);
+                        }
+                    }
+                }
+            }
+            
+            applyPullDistortion(sourceData, targetData, centerX, centerY, radius, strength) {
+                for (let px = Math.max(0, centerX - radius); px < Math.min(this.canvas.width, centerX + radius); px++) {
+                    for (let py = Math.max(0, centerY - radius); py < Math.min(this.canvas.height, centerY + radius); py++) {
+                        const dx = px - centerX;
+                        const dy = py - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < radius && distance > 0) {
+                            // Create a strong inward pull effect
+                            const factor = (radius - distance) / radius;
+                            const pullForce = factor * factor * strength * 50; // Much stronger force
+                            
+                            // Calculate pull direction (toward center)
+                            const angle = Math.atan2(dy, dx);
+                            const sourceX = Math.round(px + Math.cos(angle) * pullForce);
+                            const sourceY = Math.round(py + Math.sin(angle) * pullForce);
+                            
+                            this.copyPixel(sourceData, targetData, sourceX, sourceY, px, py);
+                        }
+                    }
+                }
+            }
+            
+            applySwirlDistortion(sourceData, targetData, centerX, centerY, radius, strength) {
+                for (let px = Math.max(0, centerX - radius); px < Math.min(this.canvas.width, centerX + radius); px++) {
+                    for (let py = Math.max(0, centerY - radius); py < Math.min(this.canvas.height, centerY + radius); py++) {
+                        const dx = px - centerX;
+                        const dy = py - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < radius) {
+                            // Create a strong swirling effect
+                            const factor = (radius - distance) / radius;
+                            const swirlIntensity = factor * strength * 3.0; // Much stronger rotation
+                            
+                            // Calculate rotation angle (stronger swirl)
+                            const rotationAngle = swirlIntensity * Math.PI; // Full rotation possible
+                            
+                            const cos = Math.cos(rotationAngle);
+                            const sin = Math.sin(rotationAngle);
+                            
+                            // Apply rotation transformation
+                            const sourceX = Math.round(centerX + dx * cos - dy * sin);
+                            const sourceY = Math.round(centerY + dx * sin + dy * cos);
+                            
+                            this.copyPixel(sourceData, targetData, sourceX, sourceY, px, py);
+                        }
+                    }
+                }
+            }
+            
+            applyPinchDistortion(sourceData, targetData, centerX, centerY, radius, strength) {
+                for (let px = Math.max(0, centerX - radius); px < Math.min(this.canvas.width, centerX + radius); px++) {
+                    for (let py = Math.max(0, centerY - radius); py < Math.min(this.canvas.height, centerY + radius); py++) {
+                        const dx = px - centerX;
+                        const dy = py - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < radius && distance > 0) {
+                            // Create a strong pinching effect
+                            const factor = (radius - distance) / radius;
+                            const pinchAmount = factor * strength * 2.0; // Much stronger pinch
+                            
+                            // Calculate new distance (stronger compression)
+                            const newDistance = distance * (1 + pinchAmount);
+                            
+                            const angle = Math.atan2(dy, dx);
+                            const sourceX = Math.round(centerX + Math.cos(angle) * newDistance);
+                            const sourceY = Math.round(centerY + Math.sin(angle) * newDistance);
+                            
+                            this.copyPixel(sourceData, targetData, sourceX, sourceY, px, py);
+                        }
+                    }
+                }
+            }
+            
+            applyBulgeDistortion(sourceData, targetData, centerX, centerY, radius, strength) {
+                for (let px = Math.max(0, centerX - radius); px < Math.min(this.canvas.width, centerX + radius); px++) {
+                    for (let py = Math.max(0, centerY - radius); py < Math.min(this.canvas.height, centerY + radius); py++) {
+                        const dx = px - centerX;
+                        const dy = py - centerY;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < radius && distance > 0) {
+                            // Create a strong bulging effect
+                            const factor = (radius - distance) / radius;
+                            const bulgeAmount = factor * strength * 1.5; // Much stronger bulge
+                            
+                            // Calculate new distance (stronger expansion)
+                            const newDistance = distance * (1 - bulgeAmount);
+                            
+                            const angle = Math.atan2(dy, dx);
+                            const sourceX = Math.round(centerX + Math.cos(angle) * newDistance);
+                            const sourceY = Math.round(centerY + Math.sin(angle) * newDistance);
+                            
+                            this.copyPixel(sourceData, targetData, sourceX, sourceY, px, py);
+                        }
+                    }
+                }
+            }
+            
+            copyPixel(sourceData, targetData, sourceX, sourceY, targetX, targetY) {
+                if (sourceX < 0 || sourceX >= this.canvas.width || sourceY < 0 || sourceY >= this.canvas.height) {
+                    return;
+                }
+                
+                if (targetX < 0 || targetX >= this.canvas.width || targetY < 0 || targetY >= this.canvas.height) {
+                    return;
+                }
+                
+                const sourceIndex = (sourceY * this.canvas.width + sourceX) * 4;
+                const targetIndex = (targetY * this.canvas.width + targetX) * 4;
+                
+                if (sourceIndex >= 0 && sourceIndex < sourceData.data.length - 3 &&
+                    targetIndex >= 0 && targetIndex < targetData.data.length - 3) {
+                    
+                    targetData.data[targetIndex] = sourceData.data[sourceIndex];
+                    targetData.data[targetIndex + 1] = sourceData.data[sourceIndex + 1];
+                    targetData.data[targetIndex + 2] = sourceData.data[sourceIndex + 2];
+                    targetData.data[targetIndex + 3] = sourceData.data[sourceIndex + 3];
+                }
+            }
+            
+            setMode(mode) {
+                this.mode = mode;
+            }
+            
+            setBrushSize(size) {
+                this.brushSize = size;
+            }
+            
+            setStrength(strength) {
+                this.strength = strength;
+            }
+        }
+        
+        // Initialize the tool
+        const canvas = document.getElementById('testCanvas');
+        const distortionTool = new SimpleDistortionTool(canvas);
+        
+        // Set up control event listeners
+        document.getElementById('modeSelect').addEventListener('change', (e) => {
+            distortionTool.setMode(e.target.value);
+        });
+        
+        document.getElementById('brushSize').addEventListener('input', (e) => {
+            const size = parseInt(e.target.value);
+            distortionTool.setBrushSize(size);
+            document.getElementById('brushSizeValue').textContent = size;
+        });
+        
+        document.getElementById('strength').addEventListener('input', (e) => {
+            const strength = parseFloat(e.target.value);
+            distortionTool.setStrength(strength);
+            document.getElementById('strengthValue').textContent = Math.round(strength * 100);
+        });
+        
+        function clearCanvas() {
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        function drawTestPattern() {
+            const ctx = canvas.getContext('2d');
+            
+            // Clear canvas
+            ctx.fillStyle = 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw some test shapes
+            ctx.fillStyle = 'red';
+            ctx.fillRect(50, 50, 100, 100);
+            
+            ctx.fillStyle = 'blue';
+            ctx.fillCircle(200, 150, 50);
+            
+            ctx.fillStyle = 'green';
+            ctx.fillRect(250, 250, 80, 80);
+            
+            ctx.fillStyle = 'orange';
+            ctx.fillCircle(100, 300, 40);
+            
+            // Draw some text
+            ctx.fillStyle = 'black';
+            ctx.font = '20px Arial';
+            ctx.fillText('Test Pattern', 150, 200);
+            ctx.fillText('Drag to distort!', 150, 220);
+        }
+        
+        // Initialize with white background
+        clearCanvas();
+        
+        // Add fillCircle method to CanvasRenderingContext2D
+        CanvasRenderingContext2D.prototype.fillCircle = function(x, y, radius) {
+            this.beginPath();
+            this.arc(x, y, radius, 0, 2 * Math.PI);
+            this.fill();
+        };
+    </script>
+</body>
+</html>

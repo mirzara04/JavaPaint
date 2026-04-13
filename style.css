@@ -1,0 +1,348 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  box-sizing: border-box;
+  background: #181a1b;
+}
+
+body {
+  height: 100vh;
+  width: 100vw;
+  min-height: 100vh;
+  min-width: 100vw;
+  overflow: hidden;
+  font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+}
+
+.wrapper {
+  display: grid;
+  height: 100vh;
+  width: 100vw;
+  grid-template-columns: 70px 1fr 200px;
+  grid-template-rows: 50px 1fr 80px;
+  grid-template-areas:
+    "header header header"
+    "sidebar content colourP"
+    "footer footer footer";
+  background-color: #181a1b;
+  color: #fff;
+}
+
+/* Make the canvas/content area fill available space */
+#content {
+  grid-area: content;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  border-radius: 0 0 8px 8px;
+  box-shadow: 0 0 10px #111;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+  justify-content: stretch;
+}
+
+#sidebar {
+  grid-area: sidebar;
+  overflow-y: auto;
+  background: #23272e;
+  border-right: 2px solid #111;
+  padding: 10px 5px;
+
+  /* NEW layout fixes */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 10px;
+}
+.header {
+	grid-area: header;
+	font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background-color: #23272e;
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+  border-bottom: 2px solid #111;
+}
+
+.footer{
+  grid-area: footer;
+}
+
+.sideBarItem {
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+  background: #222;
+  border-radius: 8px;
+  margin: 0;
+  transition: background 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+  border: 2px solid transparent;
+
+  /* NEW: center image inside */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sideBarItem img{
+	max-height: 50px;
+	max-width: 50px;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.colourPalette{
+	grid-area: colourP;
+	display: flex;
+	flex-direction: column;
+	background: #23272e;
+	border-left: 2px solid #111;
+	padding: 15px;
+	overflow-y: auto;
+}
+
+.options{
+	grid-area: options;
+	padding: 15px;
+}
+
+.colourSwatches{
+	box-sizing: border-box;
+	width: 40px;
+	height: 40px;
+	max-height: 40px;
+	max-width: 40px;
+	margin: 5px;
+}
+
+/* Remove duplicate wrapper styles */
+/* .wrapper {
+	display: grid;
+	height: 100%;
+	grid-template-columns: 70px 230px  minmax(500px, 1fr);
+	grid-template-rows: 35px minmax(500px, 1fr) 160px;
+	grid-template-areas:
+               "header header header"
+				"sidebar content content"
+                "colourP colourP options";
+	background-color: #fff;
+	color: #444;
+} */
+
+.box {
+  background-color: #444;
+  color: #fff;
+  font-size: 150%;
+}
+
+/* 1. Responsive Design */
+@media (max-width: 900px) {
+  .wrapper {
+    grid-template-columns: 50px 1fr 150px;
+    grid-template-rows: 35px 1fr 80px;
+    grid-template-areas:
+      "header header header"
+      "sidebar content colourP"
+      "footer footer footer";
+  }
+  #sidebar {
+    max-width: 50px;
+  }
+  .colourPalette {
+    max-width: 150px;
+  }
+}
+
+/* 2. Sidebar Enhancements */
+.sideBarItem.selected,
+.sideBarItem:focus {
+  border: 2px solid #00bcd4;
+  background: #2c313a;
+  box-shadow: 0 0 8px #00bcd4;
+}
+.sideBarItem:hover {
+  background: #343942;
+}
+
+/* 3. Colour Palette Improvements - Right Sidebar */
+.colourPalette {
+  background: #23272e;
+  padding: 15px;
+  border-left: 2px solid #111;
+  min-height: 60px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.colourPalette::before {
+  content: "Color Palette";
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Add options section within the color palette */
+.toolOptions {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #444;
+  width: 100%;
+}
+
+.toolOptions::before {
+  content: "Tool Options";
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 15px;
+  text-align: center;
+  display: block;
+}
+
+.toolOptions label {
+  color: #fff;
+  font-size: 0.9rem;
+  margin-bottom: 5px;
+  display: block;
+}
+
+.toolOptions input,
+.toolOptions select {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid #555;
+  background: #333;
+  color: #fff;
+}
+
+.toolOptions div {
+  color: #ccc;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: 10px;
+  line-height: 1.3;
+}
+
+.toolOptions button {
+  background: #045b51;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  margin: 5px;
+  transition: background 0.2s;
+}
+
+.toolOptions button:hover {
+  background: #008c9e;
+}
+
+.colourSwatches {
+  border-radius: 6px;
+  border: 2px solid transparent;
+  transition: border 0.2s, box-shadow 0.2s;
+  cursor: pointer;
+}
+.colourSwatches.selected,
+.colourSwatches:focus {
+  border: 2px solid #ffeb3b;
+  box-shadow: 0 0 6px #ffeb3b;
+}
+.colourSwatches:hover {
+  border: 2px solid #fff;
+}
+
+/* 4. Options Panel Styling - Remove since we're not using it in the new layout */
+.options {
+  display: none;
+}
+
+/* 5. Header and Buttons */
+.header {
+  background-color: #23272e;
+  color: #fff;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  padding-left: 10px;
+}
+.header button {
+  margin-left: 10px;
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: none;
+  background: #045b51;
+  color: #ffffff;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.header button:hover, .header button:focus {
+  background: #008c9e;
+}
+
+/* 6. Box Styling */
+.box {
+  background-color: #444;
+  color: #fff;
+  font-size: 150%;
+  border-radius: 8px;
+  margin: 2px;
+  padding: 5px;
+}
+
+/* 7. Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  background: #222;
+}
+::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 4px;
+}
+
+/* 8. Focus Outline for Accessibility */
+:focus {
+  outline: 2px solid #2196f3;
+  outline-offset: 2px;
+}
+
+/* 9. Footer (if used) */
+.footer {
+  background: #23272e;
+  color: #fff;
+  text-align: center;
+  padding: 15px;
+  font-size: 0.9rem;
+  border-top: 2px solid #111;
+  grid-area: footer;
+}
+
+.skip-link:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  background: #ffeb3b;
+  color: #222;
+  padding: 4px 8px;
+  z-index: 1000;
+}
